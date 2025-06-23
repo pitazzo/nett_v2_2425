@@ -1,4 +1,4 @@
-const LEGAL_AGE = 16;
+const LEGAL_AGE = 18;
 
 const birthYear = parseInt(process.argv[2]);
 const username = process.argv[3];
