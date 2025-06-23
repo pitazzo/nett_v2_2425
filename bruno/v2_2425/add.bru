@@ -1,0 +1,22 @@
+meta {
+  name: add
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://localhost:3000/add
+  body: json
+  auth: inherit
+}
+
+headers {
+  header1: blabla
+}
+
+body:json {
+  {
+    "a": 5,
+    "b": 1
+  }
+}

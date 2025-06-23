@@ -29,6 +29,26 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  if (url === "/add" && method === "POST") {
+    const a = parseInt(body["a"]);
+    const b = parseInt(body["b"]);
+
+    if (!a || !b) {
+      res.writeHead(400);
+      res.end("Please provide valid numbers for a and b");
+      return;
+    }
+
+    const response = {
+      result: a + b,
+    };
+
+    res.writeHead(200);
+    res.end(JSON.stringify(response));
+
+    return;
+  }
+
   res.writeHead(404);
   res.end("Not found");
 });
