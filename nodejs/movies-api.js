@@ -147,6 +147,10 @@ async function handleRequest(req, res) {
     return;
   }
 
+  if (method === "DELETE" && endpoint === "movies" && param) {
+    //... deberes!
+  }
+
   res.writeHead(404);
   res.end("Not found");
 }
