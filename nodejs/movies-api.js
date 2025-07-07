@@ -71,6 +71,26 @@ async function handleRequest(req, res) {
     return;
   }
 
+  if (method === "GET" && endpoint === "movies" && param) {
+    const id = parseInt(param);
+    if (!id) {
+      res.writeHead(400);
+      res.end("Please prove a valid ID");
+      return;
+    }
+
+    const movie = db.find((movie) => movie.id === id);
+
+    if (!movie) {
+      res.writeHead(404);
+      res.end(`Movie with ID ${id} was not found`);
+      return;
+    }
+
+    res.writeHead(200);
+    res.end(JSON.stringify(movie));
+    return;
+  }
   res.writeHead(404);
   res.end("Not found");
 }
