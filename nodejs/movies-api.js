@@ -1,5 +1,7 @@
 const http = require("http");
 
+const VALID_GENRES = ["comedy", "drama", "terror", "fantasy"];
+
 const db = [
   {
     id: 1,
@@ -91,6 +93,60 @@ async function handleRequest(req, res) {
     res.end(JSON.stringify(movie));
     return;
   }
+
+  if (method === "POST" && endpoint === "movies" && !param) {
+    const title = body["title"];
+    const genre = body["genre"];
+    const year = parseInt(body["year"]);
+    const minutes = parseInt(body["minutes"]);
+    const director = body["director"];
+
+    if (!title || typeof title !== "string" || title.length < 2) {
+      res.writeHead(400);
+      res.end("Please provide a valid movie title");
+      return;
+    }
+
+    if (!director || typeof director !== "string" || director.length < 2) {
+      res.writeHead(400);
+      res.end("Please provide a valid movie director");
+      return;
+    }
+
+    if (!genre || typeof title !== "string" || !VALID_GENRES.includes(genre)) {
+      res.writeHead(400);
+      res.end(`Please provide a valid movie genre among ${VALID_GENRES}`);
+      return;
+    }
+
+    if (!year || year < 1850 || year > new Date().getFullYear()) {
+      res.writeHead(400);
+      res.end(`Please provide a valid year`);
+      return;
+    }
+
+    if (!minutes || minutes < 2) {
+      res.writeHead(400);
+      res.end(`Please provide a duration in minutes`);
+      return;
+    }
+
+    const movie = {
+      id: db.length + 1,
+      title,
+      genre,
+      year,
+      minutes,
+      director,
+    };
+
+    db.push(movie);
+
+    res.writeHead(201);
+    res.end(JSON.stringify(movie));
+    return;
+  }
+
   res.writeHead(404);
   res.end("Not found");
 }

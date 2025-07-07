@@ -1,0 +1,21 @@
+meta {
+  name: Create movie
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://localhost:3000/movies
+  body: json
+  auth: inherit
+}
+
+body:json {
+    {
+      "title": "Up",
+      "genre": "comedy",
+      "year": 2025,
+      "director": "Charlie Chaplin",
+      "minutes": 60
+    }
+}
