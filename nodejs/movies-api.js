@@ -1,10 +1,14 @@
 const http = require("http");
+const { v4: uuidv4 } = require("uuid");
 
 const VALID_GENRES = ["comedy", "drama", "terror", "fantasy"];
+const UUID_REGEX = new RegExp(
+  "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+);
 
 let db = [
   {
-    id: 1,
+    id: "aa9d2986-fbbd-4d31-8d5c-1ec8ae11f368",
     title: "La naranja mecánica",
     genre: "drama",
     year: 1972,
@@ -12,7 +16,7 @@ let db = [
     minutes: 120,
   },
   {
-    id: 2,
+    id: "71f7913e-98c9-4a63-b986-cf1fc3730e3a",
     title: "El Apartamento",
     genre: "comedy",
     year: 1964,
@@ -20,7 +24,7 @@ let db = [
     minutes: 90,
   },
   {
-    id: 3,
+    id: "bfb72c16-c0c9-4d26-8354-e76ee7331dd9",
     title: "Harry Potter I",
     genre: "fantasy",
     year: 2002,
@@ -28,7 +32,7 @@ let db = [
     minutes: 100,
   },
   {
-    id: 4,
+    id: "59da6b61-e5c6-4de5-961a-7405750bf6c1",
     title: "Sherk I",
     genre: "fantasy",
     year: 2002,
@@ -74,8 +78,8 @@ async function handleRequest(req, res) {
   }
 
   if (method === "GET" && endpoint === "movies" && param) {
-    const id = parseInt(param);
-    if (!id) {
+    const id = param;
+    if (!UUID_REGEX.test(id)) {
       res.writeHead(400);
       res.end("Please prove a valid ID");
       return;
@@ -132,7 +136,7 @@ async function handleRequest(req, res) {
     }
 
     const movie = {
-      id: db.length + 1,
+      id: uuidv4(),
       title,
       genre,
       year,
@@ -148,8 +152,8 @@ async function handleRequest(req, res) {
   }
 
   if (method === "DELETE" && endpoint === "movies" && param) {
-    const id = parseInt(param);
-    if (!id) {
+    const id = param;
+    if (!UUID_REGEX.test(id)) {
       res.writeHead(400);
       res.end("Please a valid ID for deletion");
       return;
