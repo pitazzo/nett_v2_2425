@@ -1,4 +1,5 @@
 const http = require("http");
+require("dotenv").config();
 const { v4: uuidv4 } = require("uuid");
 
 const VALID_GENRES = ["comedy", "drama", "terror", "fantasy"];
@@ -179,7 +180,21 @@ async function handleRequest(req, res) {
   res.end("Not found");
 }
 
-const server = http.createServer(handleRequest);
+function apiKeyMiddleware(req, res, next) {
+  const apiKey = req.headers["authorization"];
+
+  if (apiKey !== process.env.API_KEY) {
+    res.writeHead(401);
+    res.end("Please provide a valid API KEY");
+    return;
+  }
+
+  return next(req, res);
+}
+
+const server = http.createServer((req, res) => {
+  return apiKeyMiddleware(req, res, handleRequest);
+});
 
 server.listen(3000, () => {
   console.log("Movies API is running on http://localhost:3000 🚀");
