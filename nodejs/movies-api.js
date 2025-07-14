@@ -2,7 +2,7 @@ const http = require("http");
 
 const VALID_GENRES = ["comedy", "drama", "terror", "fantasy"];
 
-const db = [
+let db = [
   {
     id: 1,
     title: "La naranja mecánica",
@@ -148,7 +148,27 @@ async function handleRequest(req, res) {
   }
 
   if (method === "DELETE" && endpoint === "movies" && param) {
-    //... deberes!
+    const id = parseInt(param);
+    if (!id) {
+      res.writeHead(400);
+      res.end("Please a valid ID for deletion");
+      return;
+    }
+
+    const movie = db.find((movie) => movie.id === id);
+
+    if (!movie) {
+      res.writeHead(404);
+      res.end(`Movie with ID ${id} was not found`);
+      return;
+    }
+
+    db = db.filter((movie) => movie.id !== id);
+
+    res.writeHead(200);
+    res.end(JSON.stringify(movie));
+
+    return;
   }
 
   res.writeHead(404);
