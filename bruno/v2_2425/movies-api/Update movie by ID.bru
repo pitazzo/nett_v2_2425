@@ -1,11 +1,11 @@
 meta {
-  name: Create movie
+  name: Update movie by ID
   type: http
-  seq: 3
+  seq: 5
 }
 
-post {
-  url: http://localhost:3000/movies
+patch {
+  url: http://localhost:3000/movies/59da6b61-e5c6-4de5-961a-7405750bf6c1
   body: json
   auth: inherit
 }

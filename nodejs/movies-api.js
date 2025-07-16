@@ -118,7 +118,7 @@ async function handleRequest(req, res) {
       return;
     }
 
-    if (!genre || typeof title !== "string" || !VALID_GENRES.includes(genre)) {
+    if (!genre || typeof genre !== "string" || !VALID_GENRES.includes(genre)) {
       res.writeHead(400);
       res.end(`Please provide a valid movie genre among ${VALID_GENRES}`);
       return;
@@ -173,6 +173,70 @@ async function handleRequest(req, res) {
     res.writeHead(200);
     res.end(JSON.stringify(movie));
 
+    return;
+  }
+
+  if (method === "PATCH" && endpoint === "movies" && param) {
+    const id = param;
+    if (!UUID_REGEX.test(id)) {
+      res.writeHead(400);
+      res.end("Please a valid ID for update");
+      return;
+    }
+
+    const movieIndex = db.findIndex((movie) => movie.id === id);
+
+    if (movieIndex === -1) {
+      res.writeHead(404);
+      res.end(`Movie with ID ${id} was not found`);
+      return;
+    }
+
+    const title = body["title"];
+    const genre = body["genre"];
+    const year = parseInt(body["year"]);
+    const minutes = parseInt(body["minutes"]);
+    const director = body["director"];
+
+    if (title && (typeof title !== "string" || title.length < 2)) {
+      res.writeHead(400);
+      res.end("Please provide a valid movie title");
+      return;
+    }
+
+    if (director && (typeof director !== "string" || director.length < 2)) {
+      res.writeHead(400);
+      res.end("Please provide a valid movie director");
+      return;
+    }
+
+    if (genre && (typeof genre !== "string" || !VALID_GENRES.includes(genre))) {
+      res.writeHead(400);
+      res.end(`Please provide a valid movie genre among ${VALID_GENRES}`);
+      return;
+    }
+
+    if (year && (year < 1850 || year > new Date().getFullYear())) {
+      res.writeHead(400);
+      res.end(`Please provide a valid year`);
+      return;
+    }
+
+    if (minutes && minutes < 2) {
+      res.writeHead(400);
+      res.end(`Please provide a duration in minutes`);
+      return;
+    }
+
+    db[movieIndex].title = title ?? db[movieIndex].title;
+    db[movieIndex].director = director ?? db[movieIndex].director;
+    db[movieIndex].genre = genre ?? db[movieIndex].genre;
+
+    db[movieIndex].year = year ? year : db[movieIndex].year;
+    db[movieIndex].minutes = minutes ? minutes : db[movieIndex].minutes;
+
+    res.writeHead(202);
+    res.end(JSON.stringify(db[movieIndex]));
     return;
   }
 
