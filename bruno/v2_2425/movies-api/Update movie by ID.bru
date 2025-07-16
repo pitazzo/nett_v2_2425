@@ -10,12 +10,14 @@ patch {
   auth: inherit
 }
 
+headers {
+  Authorization: MI_SECRETO_SUPER_SECRETO
+}
+
 body:json {
   {
-    "title": "El Apartamento",
+    "title": "hola hola",
     "genre": "comedy",
-    "year": 2025,
-    "director": "Charlie Chaplin",
-    "minutes": 60
+    "year": 2003
   }
 }
