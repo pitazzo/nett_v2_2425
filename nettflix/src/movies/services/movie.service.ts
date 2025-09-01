@@ -55,4 +55,16 @@ export class MovieService {
 
     return movie;
   }
+
+  deleteMovie(id: string) {
+    const movie = this.db.find((movie) => movie.id === id);
+
+    if (!movie) {
+      throw new NotFoundException(`No movie with ID ${id} was found`);
+    }
+
+    this.db = this.db.filter((movie) => movie.id !== id);
+
+    return movie;
+  }
 }

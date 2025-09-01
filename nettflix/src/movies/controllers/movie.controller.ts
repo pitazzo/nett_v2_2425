@@ -38,9 +38,8 @@ export class MovieController {
   }
 
   @Delete('/:id')
-  deleteMovie(@Param('id') id: string) {
-    console.log(`recibiendo deleteMovie(${id})`);
-    return 'hola desde NestJS!';
+  deleteMovie(@Param('id', ParseUUIDPipe) id: string) {
+    return this.movieService.deleteMovie(id);
   }
 
   @Patch('/:id')
