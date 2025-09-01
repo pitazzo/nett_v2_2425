@@ -4,6 +4,8 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
+  ParseUUIDPipe,
   Patch,
   Post,
 } from '@nestjs/common';
@@ -18,10 +20,14 @@ export class MovieController {
     return this.movieService.getAllMovies();
   }
 
+  @Get('/year/:year')
+  getByYear(@Param('year', ParseIntPipe) year: number) {
+    return this.movieService.getMoviesByYear(year);
+  }
+
   @Get('/:id')
-  getMovieById(@Param('id') id: string) {
-    console.log(`recibiendo getMovieById(${id})`);
-    return 'hola desde NestJS!';
+  getMovieById(@Param('id', ParseUUIDPipe) id: string) {
+    return this.movieService.getMovieById(id);
   }
 
   @Post()

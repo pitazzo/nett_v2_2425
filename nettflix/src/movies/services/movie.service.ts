@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Movie } from 'src/movies/models/movie.model';
 
 @Injectable()
@@ -38,7 +38,21 @@ export class MovieService {
     },
   ];
 
-  getAllMovies() {
+  getAllMovies(): Movie[] {
     return this.db;
+  }
+
+  getMoviesByYear(year: number): Movie[] {
+    return this.db.filter((movie) => movie.year === year);
+  }
+
+  getMovieById(id: string): Movie {
+    const movie = this.db.find((movie) => movie.id === id);
+
+    if (!movie) {
+      throw new NotFoundException(`No movie with ID ${id} was found`);
+    }
+
+    return movie;
   }
 }
