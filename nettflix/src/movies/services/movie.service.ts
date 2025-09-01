@@ -1,5 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Movie } from 'src/movies/models/movie.model';
+import { CreateMovieDto } from 'src/movies/dtos/create-movie.dto';
+import { Genre, Movie } from 'src/movies/models/movie.model';
+import { v4 } from 'uuid';
 
 @Injectable()
 export class MovieService {
@@ -7,7 +9,7 @@ export class MovieService {
     {
       id: 'aa9d2986-fbbd-4d31-8d5c-1ec8ae11f368',
       title: 'La naranja mecánica',
-      genre: 'drama',
+      genre: Genre.DRAMA,
       year: 1972,
       director: 'Stanley Kubrick',
       minutes: 120,
@@ -15,7 +17,7 @@ export class MovieService {
     {
       id: '71f7913e-98c9-4a63-b986-cf1fc3730e3a',
       title: 'El Apartamento',
-      genre: 'comedy',
+      genre: Genre.COMEDY,
       year: 1964,
       director: 'Billy Wilder',
       minutes: 90,
@@ -23,7 +25,7 @@ export class MovieService {
     {
       id: 'bfb72c16-c0c9-4d26-8354-e76ee7331dd9',
       title: 'Harry Potter I',
-      genre: 'fantasy',
+      genre: Genre.FANTASY,
       year: 2002,
       director: 'Chris Columbus',
       minutes: 100,
@@ -31,7 +33,7 @@ export class MovieService {
     {
       id: '59da6b61-e5c6-4de5-961a-7405750bf6c1',
       title: 'Sherk I',
-      genre: 'fantasy',
+      genre: Genre.FANTASY,
       year: 2002,
       director: 'Fulanito',
       minutes: 110,
@@ -52,6 +54,21 @@ export class MovieService {
     if (!movie) {
       throw new NotFoundException(`No movie with ID ${id} was found`);
     }
+
+    return movie;
+  }
+
+  createMovie(dto: CreateMovieDto) {
+    const movie = new Movie(
+      v4(),
+      dto.title,
+      dto.genre,
+      dto.year,
+      dto.director,
+      dto.minutes,
+    );
+
+    this.db.push(movie);
 
     return movie;
   }

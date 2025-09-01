@@ -9,6 +9,7 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
+import { CreateMovieDto } from 'src/movies/dtos/create-movie.dto';
 import { MovieService } from 'src/movies/services/movie.service';
 
 @Controller('movies')
@@ -31,10 +32,8 @@ export class MovieController {
   }
 
   @Post()
-  createMovie(@Body() body: any) {
-    console.log('recibiendo createMovie');
-    console.log(JSON.stringify(body, null, 2));
-    return 'hola desde NestJS!';
+  createMovie(@Body() body: CreateMovieDto) {
+    return this.movieService.createMovie(body);
   }
 
   @Delete('/:id')

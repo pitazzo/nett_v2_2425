@@ -1,8 +1,17 @@
+export enum Genre {
+  COMEDY = 'comedy',
+  DRAMA = 'drama',
+  FANTASY = 'fantasy',
+  ANIME = 'anime',
+}
+
 export class Movie {
-  readonly id: string;
-  title: string;
-  genre: 'comedy' | 'drama' | 'fantasy';
-  year: number;
-  director: string;
-  minutes: number;
+  constructor(
+    readonly id: string,
+    public title: string,
+    public genre: Genre,
+    public year: number,
+    public director: string,
+    public minutes: number,
+  ) {}
 }
