@@ -10,6 +10,7 @@ import {
   Post,
 } from '@nestjs/common';
 import { CreateMovieDto } from 'src/movies/dtos/create-movie.dto';
+import { UpdateMovieDto } from 'src/movies/dtos/update-movie.dto';
 import { MovieService } from 'src/movies/services/movie.service';
 
 @Controller('movies')
@@ -42,9 +43,10 @@ export class MovieController {
   }
 
   @Patch('/:id')
-  updateMovie(@Param('id') id: string, @Body() body: any) {
-    console.log(`recibiendo updateMovie(${id})`);
-    console.log(JSON.stringify(body, null, 2));
-    return 'hola desde NestJS!';
+  updateMovie(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() body: UpdateMovieDto,
+  ) {
+    return this.movieService.updateMovie(id, body);
   }
 }

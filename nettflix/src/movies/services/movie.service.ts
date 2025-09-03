@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateMovieDto } from 'src/movies/dtos/create-movie.dto';
+import { UpdateMovieDto } from 'src/movies/dtos/update-movie.dto';
 import { Genre, Movie } from 'src/movies/models/movie.model';
 import { v4 } from 'uuid';
 
@@ -13,6 +14,8 @@ export class MovieService {
       year: 1972,
       director: 'Stanley Kubrick',
       minutes: 120,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     },
     {
       id: '71f7913e-98c9-4a63-b986-cf1fc3730e3a',
@@ -21,6 +24,8 @@ export class MovieService {
       year: 1964,
       director: 'Billy Wilder',
       minutes: 90,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     },
     {
       id: 'bfb72c16-c0c9-4d26-8354-e76ee7331dd9',
@@ -29,6 +34,8 @@ export class MovieService {
       year: 2002,
       director: 'Chris Columbus',
       minutes: 100,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     },
     {
       id: '59da6b61-e5c6-4de5-961a-7405750bf6c1',
@@ -37,6 +44,8 @@ export class MovieService {
       year: 2002,
       director: 'Fulanito',
       minutes: 110,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     },
   ];
 
@@ -66,11 +75,31 @@ export class MovieService {
       dto.year,
       dto.director,
       dto.minutes,
+      new Date(),
+      new Date(),
     );
 
     this.db.push(movie);
 
     return movie;
+  }
+
+  updateMovie(id: string, dto: UpdateMovieDto) {
+    const index = this.db.findIndex((movie) => movie.id === id);
+
+    if (index === -1) {
+      throw new NotFoundException(`No movie with ID ${id} was found`);
+    }
+
+    const updatedMovie = {
+      ...this.db[index],
+      ...dto,
+      updatedAt: new Date(),
+    };
+
+    this.db[index] = updatedMovie;
+
+    return updatedMovie;
   }
 
   deleteMovie(id: string) {

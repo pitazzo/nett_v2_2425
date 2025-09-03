@@ -7,11 +7,13 @@ export enum Genre {
 
 export class Movie {
   constructor(
-    readonly id: string,
+    public readonly id: string,
     public title: string,
     public genre: Genre,
     public year: number,
     public director: string,
     public minutes: number,
+    public readonly createdAt: Date,
+    public updatedAt: Date,
   ) {}
 }
