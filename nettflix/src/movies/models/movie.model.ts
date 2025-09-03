@@ -1,3 +1,5 @@
+import { Review } from 'src/movies/models/review.model';
+
 export enum Genre {
   COMEDY = 'comedy',
   DRAMA = 'drama',
@@ -13,6 +15,7 @@ export class Movie {
     public year: number,
     public director: string,
     public minutes: number,
+    public reviews: Review[],
     public readonly createdAt: Date,
     public updatedAt: Date,
   ) {}

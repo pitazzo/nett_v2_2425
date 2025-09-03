@@ -10,6 +10,7 @@ import {
   Post,
 } from '@nestjs/common';
 import { CreateMovieDto } from 'src/movies/dtos/create-movie.dto';
+import { CreateReviewDto } from 'src/movies/dtos/create-review.dto';
 import { UpdateMovieDto } from 'src/movies/dtos/update-movie.dto';
 import { MovieService } from 'src/movies/services/movie.service';
 
@@ -48,5 +49,13 @@ export class MovieController {
     @Body() body: UpdateMovieDto,
   ) {
     return this.movieService.updateMovie(id, body);
+  }
+
+  @Post('/:id/review')
+  createReview(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() body: CreateReviewDto,
+  ) {
+    return this.movieService.createReview(id, body);
   }
 }

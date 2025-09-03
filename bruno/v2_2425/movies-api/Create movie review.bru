@@ -1,0 +1,18 @@
+meta {
+  name: Create movie review
+  type: http
+  seq: 4
+}
+
+post {
+  url: http://localhost:3000/movies/aa9d2986-fbbd-4d31-8d5c-1ec8ae11f368/review
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "score": 1,
+    "text": "No me ha gustado nada de nada 🫠"
+  }
+}

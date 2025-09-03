@@ -1,5 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateMovieDto } from 'src/movies/dtos/create-movie.dto';
+import { CreateReviewDto } from 'src/movies/dtos/create-review.dto';
+import { DetailedMovieDto } from 'src/movies/dtos/detailed-movie.dto';
+import { MovieListItemDto } from 'src/movies/dtos/movie-list-item.dto';
+import { ReviewDto } from 'src/movies/dtos/review.dto';
 import { UpdateMovieDto } from 'src/movies/dtos/update-movie.dto';
 import { Genre, Movie } from 'src/movies/models/movie.model';
 import { v4 } from 'uuid';
@@ -14,6 +18,15 @@ export class MovieService {
       year: 1972,
       director: 'Stanley Kubrick',
       minutes: 120,
+      reviews: [
+        {
+          id: 'bbafee9c-5ce5-45d9-bf48-d3cb581671e0',
+          score: 10,
+          text: 'Probablemente, la mejor peli de la historia',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      ],
       createdAt: new Date(),
       updatedAt: new Date(),
     },
@@ -24,6 +37,7 @@ export class MovieService {
       year: 1964,
       director: 'Billy Wilder',
       minutes: 90,
+      reviews: [],
       createdAt: new Date(),
       updatedAt: new Date(),
     },
@@ -34,6 +48,7 @@ export class MovieService {
       year: 2002,
       director: 'Chris Columbus',
       minutes: 100,
+      reviews: [],
       createdAt: new Date(),
       updatedAt: new Date(),
     },
@@ -44,30 +59,33 @@ export class MovieService {
       year: 2002,
       director: 'Fulanito',
       minutes: 110,
+      reviews: [],
       createdAt: new Date(),
       updatedAt: new Date(),
     },
   ];
 
-  getAllMovies(): Movie[] {
-    return this.db;
+  getAllMovies(): MovieListItemDto[] {
+    return this.db.map((movie) => MovieListItemDto.fromModel(movie));
   }
 
-  getMoviesByYear(year: number): Movie[] {
-    return this.db.filter((movie) => movie.year === year);
+  getMoviesByYear(year: number): MovieListItemDto[] {
+    return this.db
+      .filter((movie) => movie.year === year)
+      .map((movie) => MovieListItemDto.fromModel(movie));
   }
 
-  getMovieById(id: string): Movie {
+  getMovieById(id: string): DetailedMovieDto {
     const movie = this.db.find((movie) => movie.id === id);
 
     if (!movie) {
       throw new NotFoundException(`No movie with ID ${id} was found`);
     }
 
-    return movie;
+    return DetailedMovieDto.fromModel(movie);
   }
 
-  createMovie(dto: CreateMovieDto) {
+  createMovie(dto: CreateMovieDto): DetailedMovieDto {
     const movie = new Movie(
       v4(),
       dto.title,
@@ -75,16 +93,17 @@ export class MovieService {
       dto.year,
       dto.director,
       dto.minutes,
+      [],
       new Date(),
       new Date(),
     );
 
     this.db.push(movie);
 
-    return movie;
+    return DetailedMovieDto.fromModel(movie);
   }
 
-  updateMovie(id: string, dto: UpdateMovieDto) {
+  updateMovie(id: string, dto: UpdateMovieDto): DetailedMovieDto {
     const index = this.db.findIndex((movie) => movie.id === id);
 
     if (index === -1) {
@@ -99,10 +118,10 @@ export class MovieService {
 
     this.db[index] = updatedMovie;
 
-    return updatedMovie;
+    return DetailedMovieDto.fromModel(updatedMovie);
   }
 
-  deleteMovie(id: string) {
+  deleteMovie(id: string): DetailedMovieDto {
     const movie = this.db.find((movie) => movie.id === id);
 
     if (!movie) {
@@ -111,6 +130,25 @@ export class MovieService {
 
     this.db = this.db.filter((movie) => movie.id !== id);
 
-    return movie;
+    return DetailedMovieDto.fromModel(movie);
+  }
+
+  createReview(id: string, body: CreateReviewDto) {
+    const index = this.db.findIndex((movie) => movie.id === id);
+
+    if (index === -1) {
+      throw new NotFoundException(`No movie with ID ${id} was found`);
+    }
+
+    const review = {
+      id: v4(),
+      ...body,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+
+    this.db[index].reviews.push(review);
+
+    return ReviewDto.fromModel(review);
   }
 }
