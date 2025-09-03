@@ -7,9 +7,12 @@ import { DetailedReviewDto } from 'src/movies/dtos/detailed-review.dto';
 import { UpdateMovieDto } from 'src/movies/dtos/update-movie.dto';
 import { Genre, Movie } from 'src/movies/models/movie.model';
 import { v4 } from 'uuid';
+import { ModerationService } from 'src/movies/services/moderation.service';
 
 @Injectable()
 export class MovieService {
+  constructor(private readonly moderationService: ModerationService) {}
+
   db: Movie[] = [
     {
       id: 'aa9d2986-fbbd-4d31-8d5c-1ec8ae11f368',
@@ -139,6 +142,8 @@ export class MovieService {
     if (index === -1) {
       throw new NotFoundException(`No movie with ID ${id} was found`);
     }
+
+    this.moderationService.isAcceptable(body.text);
 
     const review = {
       id: v4(),
