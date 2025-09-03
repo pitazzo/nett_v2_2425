@@ -1,0 +1,36 @@
+meta {
+  name: Demo OpenAI
+  type: http
+  seq: 4
+}
+
+post {
+  url: https://api.openai.com/v1/chat/completions
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  Authorization: Bearer {{openai_api_key}}
+}
+
+body:json {
+  {
+    "model": "gpt-4.1-nano",
+    "messages": [
+      {
+        "role": "developer",
+        "content": "Eres un moderador de contenido. Te voy a pasar un mensaje y si incluye insultos o palabras mal sonantes, debes decirme que no es apto, sino, que está todo OK"
+      },
+      {
+        "role": "user",
+        "content": ""
+      }
+    ]
+  }
+}
+
+settings {
+  encodeUrl: false
+}
