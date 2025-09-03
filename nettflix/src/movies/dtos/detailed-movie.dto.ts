@@ -1,4 +1,4 @@
-import { ReviewDto } from 'src/movies/dtos/review.dto';
+import { DetailedReviewDto } from 'src/movies/dtos/detailed-review.dto';
 import { Genre, Movie } from 'src/movies/models/movie.model';
 
 export class DetailedMovieDto {
@@ -9,7 +9,7 @@ export class DetailedMovieDto {
     public readonly year: number,
     public readonly director: string,
     public readonly minutes: number,
-    public readonly reviews: ReviewDto[],
+    public readonly reviews: DetailedReviewDto[],
   ) {}
 
   static fromModel(movie: Movie) {
@@ -20,7 +20,7 @@ export class DetailedMovieDto {
       movie.year,
       movie.director,
       movie.minutes,
-      movie.reviews.map((review) => ReviewDto.fromModel(review)),
+      movie.reviews.map((review) => DetailedReviewDto.fromModel(review)),
     );
   }
 }

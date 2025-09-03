@@ -1,9 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateMovieDto } from 'src/movies/dtos/create-movie.dto';
-import { CreateReviewDto } from 'src/movies/dtos/create-review.dto';
+import { UpsertReviewDto } from 'src/movies/dtos/upsert-review.dto';
 import { DetailedMovieDto } from 'src/movies/dtos/detailed-movie.dto';
 import { MovieListItemDto } from 'src/movies/dtos/movie-list-item.dto';
-import { ReviewDto } from 'src/movies/dtos/review.dto';
+import { DetailedReviewDto } from 'src/movies/dtos/detailed-review.dto';
 import { UpdateMovieDto } from 'src/movies/dtos/update-movie.dto';
 import { Genre, Movie } from 'src/movies/models/movie.model';
 import { v4 } from 'uuid';
@@ -133,7 +133,7 @@ export class MovieService {
     return DetailedMovieDto.fromModel(movie);
   }
 
-  createReview(id: string, body: CreateReviewDto) {
+  createReview(id: string, body: UpsertReviewDto) {
     const index = this.db.findIndex((movie) => movie.id === id);
 
     if (index === -1) {
@@ -149,6 +149,41 @@ export class MovieService {
 
     this.db[index].reviews.push(review);
 
-    return ReviewDto.fromModel(review);
+    return DetailedReviewDto.fromModel(review);
+  }
+
+  updateReview(
+    movieId: string,
+    reviewId: string,
+    dto: UpsertReviewDto,
+  ): DetailedReviewDto {
+    const movieIndex = this.db.findIndex((movie) => movie.id === movieId);
+
+    if (movieIndex === -1) {
+      throw new NotFoundException(`No movie with ID ${movieId} was found`);
+    }
+
+    const movie = this.db[movieIndex];
+
+    const reviewIndex = movie.reviews.findIndex(
+      (review) => review.id === reviewId,
+    );
+
+    if (reviewIndex === -1) {
+      throw new NotFoundException(
+        `Movie ${movie.id} has not review with ID ${reviewId}`,
+      );
+    }
+
+    const oldReview = this.db[movieIndex].reviews[reviewIndex];
+    const updatedReview = {
+      ...oldReview,
+      ...dto,
+      updatedAt: new Date(),
+    };
+
+    this.db[movieIndex].reviews[reviewIndex] = updatedReview;
+
+    return DetailedReviewDto.fromModel(updatedReview);
   }
 }

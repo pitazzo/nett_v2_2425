@@ -1,12 +1,13 @@
 import { Review } from 'src/movies/models/review.model';
 
-export class ReviewDto {
+export class DetailedReviewDto {
   constructor(
+    public readonly id: string,
     public readonly score: number,
     public readonly text: string,
   ) {}
 
   static fromModel(review: Review) {
-    return new ReviewDto(review.score, review.text);
+    return new DetailedReviewDto(review.id, review.score, review.text);
   }
 }

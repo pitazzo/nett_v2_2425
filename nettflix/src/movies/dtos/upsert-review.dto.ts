@@ -7,7 +7,7 @@ import {
   MinLength,
 } from 'class-validator';
 
-export class CreateReviewDto {
+export class UpsertReviewDto {
   @IsNumber()
   @Min(0)
   @Max(10)

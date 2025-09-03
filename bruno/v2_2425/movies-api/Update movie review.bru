@@ -1,0 +1,18 @@
+meta {
+  name: Update movie review
+  type: http
+  seq: 5
+}
+
+patch {
+  url: http://localhost:3000/movies/aa9d2986-fbbd-4d31-8d5c-1ec8ae11f368/review/02052ec7-e19d-4a96-ba0e-f3df501abe13
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "score": 8,
+    "text": "No está tan mal"
+  }
+}
