@@ -5,6 +5,7 @@ export class DetailedMovieDto {
   constructor(
     public readonly id: string,
     public readonly title: string,
+    public readonly synopsys: string,
     public readonly genre: Genre,
     public readonly year: number,
     public readonly director: string,
@@ -16,6 +17,7 @@ export class DetailedMovieDto {
     return new DetailedMovieDto(
       movie.id,
       movie.title,
+      movie.synopsys,
       movie.genre,
       movie.year,
       movie.director,
