@@ -1,5 +1,5 @@
 import { Review } from 'src/movies/models/review.model';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 export enum Genre {
   COMEDY = 'comedy',
@@ -11,7 +11,6 @@ export enum Genre {
 @Entity()
 export class Movie {
   constructor(
-    id: string,
     title: string,
     synopsis: string,
     genre: Genre,
@@ -22,7 +21,6 @@ export class Movie {
     createdAt: Date,
     updatedAt: Date,
   ) {
-    this.id = id;
     this.title = title;
     this.synopsis = synopsis;
     this.genre = genre;
@@ -55,6 +53,7 @@ export class Movie {
   @Column()
   public minutes: number;
 
+  @OneToMany(() => Review, (review) => review.movie)
   public reviews: Review[];
 
   @Column()

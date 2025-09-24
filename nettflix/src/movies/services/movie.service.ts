@@ -1,26 +1,28 @@
 import {
-  // BadRequestException,
+  BadRequestException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { CreateMovieDto } from 'src/movies/dtos/create-movie.dto';
-// import { UpsertReviewDto } from 'src/movies/dtos/upsert-review.dto';
+import { UpsertReviewDto } from 'src/movies/dtos/upsert-review.dto';
 import { DetailedMovieDto } from 'src/movies/dtos/detailed-movie.dto';
 import { MovieListItemDto } from 'src/movies/dtos/movie-list-item.dto';
-// import { DetailedReviewDto } from 'src/movies/dtos/detailed-review.dto';
+import { DetailedReviewDto } from 'src/movies/dtos/detailed-review.dto';
 import { UpdateMovieDto } from 'src/movies/dtos/update-movie.dto';
 import { Movie } from 'src/movies/models/movie.model';
-import { v4 } from 'uuid';
 import { ModerationService } from 'src/movies/services/moderation.service';
 import { SynopsisService } from 'src/movies/services/synopsis.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { Review } from 'src/movies/models/review.model';
 
 @Injectable()
 export class MovieService {
   constructor(
     @InjectRepository(Movie)
     private movieRepository: Repository<Movie>,
+    @InjectRepository(Review)
+    private reviewRepository: Repository<Review>,
     private readonly moderationService: ModerationService,
     private readonly synopsisService: SynopsisService,
   ) {}
@@ -41,7 +43,10 @@ export class MovieService {
   }
 
   async getMovieById(id: string): Promise<DetailedMovieDto> {
-    const movie = await this.movieRepository.findOne({ where: { id } });
+    const movie = await this.movieRepository.findOne({
+      where: { id },
+      relations: ['reviews'],
+    });
 
     if (!movie) {
       throw new NotFoundException(`No movie with ID ${id} was found`);
@@ -52,7 +57,6 @@ export class MovieService {
 
   async createMovie(dto: CreateMovieDto): Promise<DetailedMovieDto> {
     const movie = new Movie(
-      v4(),
       dto.title,
       await this.synopsisService.getSynopsis(dto.title),
       dto.genre,
@@ -102,65 +106,75 @@ export class MovieService {
     return DetailedMovieDto.fromModel(movie);
   }
 
-  // async createReview(id: string, body: UpsertReviewDto) {
-  //   const index = this.db.findIndex((movie) => movie.id === id);
+  async createReview(id: string, body: UpsertReviewDto) {
+    const movie = await this.movieRepository.findOne({ where: { id } });
 
-  //   if (index === -1) {
-  //     throw new NotFoundException(`No movie with ID ${id} was found`);
-  //   }
+    if (!movie) {
+      throw new NotFoundException(`No movie with ID ${id} was found`);
+    }
 
-  //   const isAcceptable = await this.moderationService.isAcceptable(body.text);
+    const isAcceptable = await this.moderationService.isAcceptable(body.text);
 
-  //   if (!isAcceptable) {
-  //     throw new BadRequestException(
-  //       'The review does not follow the accpetable usage policy',
-  //     );
-  //   }
+    if (!isAcceptable) {
+      throw new BadRequestException(
+        'The review does not follow the accpetable usage policy',
+      );
+    }
 
-  //   const review = {
-  //     id: v4(),
-  //     ...body,
-  //     createdAt: new Date(),
-  //     updatedAt: new Date(),
-  //   };
+    const review = this.reviewRepository.create({
+      text: body.text,
+      score: body.score,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      movie: {
+        id,
+      },
+    });
 
-  //   this.db[index].reviews.push(review);
+    await this.reviewRepository.save(review);
 
-  //   return DetailedReviewDto.fromModel(review);
-  // }
+    return DetailedReviewDto.fromModel(review);
+  }
 
-  // updateReview(
-  //   movieId: string,
-  //   reviewId: string,
-  //   dto: UpsertReviewDto,
-  // ): DetailedReviewDto {
-  //   const movieIndex = this.db.findIndex((movie) => movie.id === movieId);
+  async updateReview(
+    movieId: string,
+    reviewId: string,
+    dto: UpsertReviewDto,
+  ): Promise<DetailedReviewDto> {
+    const movie = await this.movieRepository.findOne({
+      where: { id: movieId },
+    });
 
-  //   if (movieIndex === -1) {
-  //     throw new NotFoundException(`No movie with ID ${movieId} was found`);
-  //   }
+    if (!movie) {
+      throw new NotFoundException(`No movie with ID ${movieId} was found`);
+    }
 
-  //   const movie = this.db[movieIndex];
+    const oldReview = await this.reviewRepository.findOne({
+      where: { id: reviewId },
+    });
 
-  //   const reviewIndex = movie.reviews.findIndex(
-  //     (review) => review.id === reviewId,
-  //   );
+    if (!oldReview) {
+      throw new NotFoundException(
+        `Movie ${movie.id} has not review with ID ${reviewId}`,
+      );
+    }
 
-  //   if (reviewIndex === -1) {
-  //     throw new NotFoundException(
-  //       `Movie ${movie.id} has not review with ID ${reviewId}`,
-  //     );
-  //   }
+    const isAcceptable = await this.moderationService.isAcceptable(dto.text);
 
-  //   const oldReview = this.db[movieIndex].reviews[reviewIndex];
-  //   const updatedReview = {
-  //     ...oldReview,
-  //     ...dto,
-  //     updatedAt: new Date(),
-  //   };
+    if (!isAcceptable) {
+      throw new BadRequestException(
+        'The review does not follow the accpetable usage policy',
+      );
+    }
 
-  //   this.db[movieIndex].reviews[reviewIndex] = updatedReview;
+    const updatedReview = {
+      ...oldReview,
+      ...dto,
+      updatedAt: new Date(),
+    };
 
-  //   return DetailedReviewDto.fromModel(updatedReview);
-  // }
+    await this.reviewRepository.save(updatedReview);
+
+    return DetailedReviewDto.fromModel(updatedReview);
+  }
 }

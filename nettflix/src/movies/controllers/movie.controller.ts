@@ -10,7 +10,7 @@ import {
   Post,
 } from '@nestjs/common';
 import { CreateMovieDto } from 'src/movies/dtos/create-movie.dto';
-// import { UpsertReviewDto } from 'src/movies/dtos/upsert-review.dto';
+import { UpsertReviewDto } from 'src/movies/dtos/upsert-review.dto';
 import { UpdateMovieDto } from 'src/movies/dtos/update-movie.dto';
 import { MovieService } from 'src/movies/services/movie.service';
 
@@ -51,20 +51,20 @@ export class MovieController {
     return this.movieService.updateMovie(id, body);
   }
 
-  // @Post('/:id/review')
-  // createReview(
-  //   @Param('id', ParseUUIDPipe) id: string,
-  //   @Body() body: UpsertReviewDto,
-  // ) {
-  //   return this.movieService.createReview(id, body);
-  // }
+  @Post('/:id/review')
+  createReview(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() body: UpsertReviewDto,
+  ) {
+    return this.movieService.createReview(id, body);
+  }
 
-  // @Patch('/:movieId/review/:reviewId')
-  // updateReview(
-  //   @Param('movieId', ParseUUIDPipe) movieId: string,
-  //   @Param('reviewId', ParseUUIDPipe) reviewId: string,
-  //   @Body() body: UpsertReviewDto,
-  // ) {
-  //   return this.movieService.updateReview(movieId, reviewId, body);
-  // }
+  @Patch('/:movieId/review/:reviewId')
+  updateReview(
+    @Param('movieId', ParseUUIDPipe) movieId: string,
+    @Param('reviewId', ParseUUIDPipe) reviewId: string,
+    @Body() body: UpsertReviewDto,
+  ) {
+    return this.movieService.updateReview(movieId, reviewId, body);
+  }
 }
