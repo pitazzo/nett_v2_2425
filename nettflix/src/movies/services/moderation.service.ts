@@ -12,7 +12,7 @@ export class ModerationService {
           {
             role: 'developer',
             content:
-              'Eres un moderador de contenido. Te voy a pasar un mensaje y si incluye insultos o palabras mal sonantes, debes decirme que no es apto, sino, que está todo OK',
+              'Eres un moderador de contenido. Te voy a pasar un mensaje y si incluye insultos o palabras mal sonantes, debes devolverme un JSON tal que {isAcceptable: false}, mientras que si está OK, respondas {isAcceptable: false}',
           },
           {
             role: 'user',
@@ -28,8 +28,10 @@ export class ModerationService {
       },
     );
 
-    console.log(JSON.stringify(response.data, null, 2));
+    const output = response.data['choices'][0]['message']['content'];
 
-    return false;
+    const parsed = JSON.parse(output);
+
+    return parsed['isAcceptable'];
   }
 }

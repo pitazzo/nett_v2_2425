@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateMovieDto } from 'src/movies/dtos/create-movie.dto';
 import { UpsertReviewDto } from 'src/movies/dtos/upsert-review.dto';
 import { DetailedMovieDto } from 'src/movies/dtos/detailed-movie.dto';
@@ -136,14 +140,20 @@ export class MovieService {
     return DetailedMovieDto.fromModel(movie);
   }
 
-  createReview(id: string, body: UpsertReviewDto) {
+  async createReview(id: string, body: UpsertReviewDto) {
     const index = this.db.findIndex((movie) => movie.id === id);
 
     if (index === -1) {
       throw new NotFoundException(`No movie with ID ${id} was found`);
     }
 
-    this.moderationService.isAcceptable(body.text);
+    const isAcceptable = await this.moderationService.isAcceptable(body.text);
+
+    if (!isAcceptable) {
+      throw new BadRequestException(
+        'The review does not follow the accpetable usage policy',
+      );
+    }
 
     const review = {
       id: v4(),
