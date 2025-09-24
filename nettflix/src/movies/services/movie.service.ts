@@ -21,6 +21,7 @@ export class MovieService {
     {
       id: 'aa9d2986-fbbd-4d31-8d5c-1ec8ae11f368',
       title: 'La naranja mecánica',
+      synopsys: 'Bla bla bla',
       genre: Genre.DRAMA,
       year: 1972,
       director: 'Stanley Kubrick',
@@ -40,6 +41,7 @@ export class MovieService {
     {
       id: '71f7913e-98c9-4a63-b986-cf1fc3730e3a',
       title: 'El Apartamento',
+      synopsys: 'Bla bla bla',
       genre: Genre.COMEDY,
       year: 1964,
       director: 'Billy Wilder',
@@ -51,6 +53,7 @@ export class MovieService {
     {
       id: 'bfb72c16-c0c9-4d26-8354-e76ee7331dd9',
       title: 'Harry Potter I',
+      synopsys: 'Bla bla bla',
       genre: Genre.FANTASY,
       year: 2002,
       director: 'Chris Columbus',
@@ -62,6 +65,7 @@ export class MovieService {
     {
       id: '59da6b61-e5c6-4de5-961a-7405750bf6c1',
       title: 'Sherk I',
+      synopsys: 'Bla bla bla',
       genre: Genre.FANTASY,
       year: 2002,
       director: 'Fulanito',
@@ -96,6 +100,7 @@ export class MovieService {
     const movie = new Movie(
       v4(),
       dto.title,
+      '???',
       dto.genre,
       dto.year,
       dto.director,
