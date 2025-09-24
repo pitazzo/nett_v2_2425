@@ -11,7 +11,7 @@ export class Movie {
   constructor(
     public readonly id: string,
     public title: string,
-    public synopsys: string,
+    public synopsis: string,
     public genre: Genre,
     public year: number,
     public director: string,
