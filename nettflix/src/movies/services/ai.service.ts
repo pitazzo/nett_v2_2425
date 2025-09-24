@@ -5,7 +5,7 @@ import axios from 'axios';
 export class AIService {
   async ask(prompt: string, text: string): Promise<any> {
     const response = await axios.post(
-      'https://api.openai.com/v/chat/completions',
+      'https://api.openai.com/v1/chat/completions',
       {
         model: 'gpt-4.1-nano',
         messages: [

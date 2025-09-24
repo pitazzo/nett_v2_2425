@@ -22,7 +22,7 @@ export class DetailedMovieDto {
       movie.year,
       movie.director,
       movie.minutes,
-      movie.reviews.map((review) => DetailedReviewDto.fromModel(review)),
+      [], //movie.reviews.map((review) => DetailedReviewDto.fromModel(review)),
     );
   }
 }
