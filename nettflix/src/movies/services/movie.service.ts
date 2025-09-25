@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { CreateMovieDto } from 'src/movies/dtos/create-movie.dto';
 import { UpsertReviewDto } from 'src/movies/dtos/upsert-review.dto';
@@ -45,7 +46,7 @@ export class MovieService {
   async getMovieById(id: string): Promise<DetailedMovieDto> {
     const movie = await this.movieRepository.findOne({
       where: { id },
-      relations: ['reviews'],
+      relations: ['reviews', 'reviews.author'],
     });
 
     if (!movie) {
@@ -106,7 +107,7 @@ export class MovieService {
     return DetailedMovieDto.fromModel(movie);
   }
 
-  async createReview(id: string, body: UpsertReviewDto) {
+  async createReview(id: string, body: UpsertReviewDto, userId: string) {
     const movie = await this.movieRepository.findOne({ where: { id } });
 
     if (!movie) {
@@ -129,6 +130,9 @@ export class MovieService {
       movie: {
         id,
       },
+      author: {
+        id: userId,
+      },
     });
 
     await this.reviewRepository.save(review);
@@ -140,6 +144,7 @@ export class MovieService {
     movieId: string,
     reviewId: string,
     dto: UpsertReviewDto,
+    userId: string,
   ): Promise<DetailedReviewDto> {
     const movie = await this.movieRepository.findOne({
       where: { id: movieId },
@@ -151,12 +156,17 @@ export class MovieService {
 
     const oldReview = await this.reviewRepository.findOne({
       where: { id: reviewId },
+      relations: ['author'],
     });
 
     if (!oldReview) {
       throw new NotFoundException(
         `Movie ${movie.id} has not review with ID ${reviewId}`,
       );
+    }
+
+    if (oldReview.author.id !== userId) {
+      throw new UnauthorizedException();
     }
 
     const isAcceptable = await this.moderationService.isAcceptable(dto.text);

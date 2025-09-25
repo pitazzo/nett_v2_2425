@@ -8,6 +8,7 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  Req,
 } from '@nestjs/common';
 import { CreateMovieDto } from 'src/movies/dtos/create-movie.dto';
 import { UpsertReviewDto } from 'src/movies/dtos/upsert-review.dto';
@@ -55,8 +56,11 @@ export class MovieController {
   createReview(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() body: UpsertReviewDto,
+    @Req() request: Request,
   ) {
-    return this.movieService.createReview(id, body);
+    const userId = request['user']['id'];
+
+    return this.movieService.createReview(id, body, userId);
   }
 
   @Patch('/:movieId/review/:reviewId')
@@ -64,7 +68,10 @@ export class MovieController {
     @Param('movieId', ParseUUIDPipe) movieId: string,
     @Param('reviewId', ParseUUIDPipe) reviewId: string,
     @Body() body: UpsertReviewDto,
+    @Req() request: Request,
   ) {
-    return this.movieService.updateReview(movieId, reviewId, body);
+    const userId = request['user']['id'];
+
+    return this.movieService.updateReview(movieId, reviewId, body, userId);
   }
 }
